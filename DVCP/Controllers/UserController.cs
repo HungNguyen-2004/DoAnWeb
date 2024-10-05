@@ -79,11 +79,24 @@ namespace DVCP.Controllers
         {
             return View();
         }
+
+        public bool ContainsSpecialCharacters(string input)
+        {
+            return System.Text.RegularExpressions.Regex.IsMatch(input, @"[^a-zA-Z0-9]");
+        }
+
         [HttpPost]
         public ActionResult createUser(userListViewModel model)
         {
             if(ModelState.IsValid)
             {
+                // Kiểm tra nếu username chứa ký tự đặc biệt
+                if (ContainsSpecialCharacters(model.username))
+                {
+                    ViewBag.anno = "Username không được chứa kí tự đặc biệt";
+                    return View();
+                }
+
                 User user = UnitOfWork.userRepository.FindByUsername(model.username);
                 if(user == null)
                 {
